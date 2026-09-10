@@ -17,11 +17,11 @@ dev = ["pytest>=8.0"]
 publishing = "publishing_app.cli:main"
 
 [tool.setuptools]
-packages = ["publishing_app", "solution"]
+packages = ["publishing_app"]
 
 [tool.setuptools.package-data]
 publishing_app = ["data/*.json"]
-solution = ["data/*.json"]
 
+# The test suite lives on the `solution` branch, alongside the finished code.
 [tool.pytest.ini_options]
 testpaths = ["tests"]
