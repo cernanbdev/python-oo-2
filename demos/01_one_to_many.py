@@ -25,5 +25,3 @@ book2 = Book("Learning APIs", penguin)
 # Two directions, one relationship.
 print("From the book: ", book1.publisher.name)
 print("From the publisher:", [book.title for book in penguin.books])
-
-# Ask the room: which side holds one object, and which side holds many?

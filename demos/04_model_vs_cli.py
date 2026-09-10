@@ -34,8 +34,6 @@ class Book:
         self.title = title
 
 
-# The CLI reaches past the author and reassembles the relationship itself.
-# Every other feature that needs an author's books will do this again.
 def show_author_books_bad(author):
     books = []
 
