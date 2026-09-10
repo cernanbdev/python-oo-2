@@ -35,7 +35,7 @@ The app runs with no API key and no network connection.
 
 | Branch | `publishing_app/` contains |
 |---|---|
-| `main` | The starter, with three `TODO` stubs. This is the branch you build on. |
+| `main` | The starter. Every piece built during the session is a `TODO` stub. This is the branch you build on. |
 | `solution` | The finished application, plus the 33 tests that cover it. |
 
 To keep the finished version on disk without it showing up in the folder you are working in:

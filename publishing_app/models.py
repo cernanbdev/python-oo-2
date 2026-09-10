@@ -16,17 +16,6 @@ class Publisher:
         self.books = []
         Publisher.all.append(self)
 
-    def authors(self):
-        """Every author under contract for one of this publisher's books."""
-        found = []
-
-        for book in self.books:
-            for author in book.authors():
-                if author not in found:
-                    found.append(author)
-
-        return found
-
     def __repr__(self):
         return f"<Publisher {self.name}>"
 
@@ -47,14 +36,12 @@ class Book:
         Book.all.append(self)
 
     def contracts(self):
-        return [
-            contract
-            for contract in Contract.all
-            if contract.book == self
-        ]
+        # TODO (0:45 build): every Contract in Contract.all whose book is self.
+        raise NotImplementedError("Book.contracts is the 0:45 build")
 
     def authors(self):
-        return [contract.author for contract in self.contracts()]
+        # TODO (0:45 build): the author on each of this book's contracts.
+        raise NotImplementedError("Book.authors is the 0:45 build")
 
     def __repr__(self):
         return f"<Book {self.title}>"
@@ -70,14 +57,13 @@ class Author:
         Author.all.append(self)
 
     def contracts(self):
-        return [
-            contract
-            for contract in Contract.all
-            if contract.author == self
-        ]
+        # TODO (0:45 build): every Contract in Contract.all whose author is self.
+        # You wrote this in demos/02. Now write it where it belongs.
+        raise NotImplementedError("Author.contracts is the 0:45 build")
 
     def books(self):
-        return [contract.book for contract in self.contracts()]
+        # TODO (0:45 build): the book on each of this author's contracts.
+        raise NotImplementedError("Author.books is the 0:45 build")
 
     # TODO (1:17 challenge): add sign(self, book, royalty) so creating a
     # contract reads as something the author does.

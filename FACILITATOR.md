@@ -38,7 +38,7 @@ They are on a second branch, checked out beside it.
 
 | Branch | `publishing_app/` contains | Also has |
 |---|---|---|
-| `main` | The starter. Runs from minute one; the three build targets are `TODO` stubs. | `demos/` |
+| `main` | The starter. Runs from minute one; every build target is a `TODO` stub tagged with its timestamp. | `demos/` |
 | `solution` | The finished application, matching this runsheet's end state. | `tests/` |
 
 You teach from `main`.
@@ -137,9 +137,56 @@ That is the setup for the next block.
 Key line to deliver while `cli.py` is on screen:
 the CLI file contains no loops over `Contract.all`, and it never will.
 
+While `models.py` is on screen, point at the four `NotImplementedError` stubs on `Book` and `Author`.
+Say plainly: the objects exist, the data is loaded, and nothing can answer "which books?" yet.
+That gap is what the next block closes, and it closes in `models.py` before it closes in `cli.py`.
+
 ### 0:45-1:05 - Build "View an Author's Books"
 
-**Type this into `publishing_app/cli.py`, replacing the `show_author_books` stub.**
+This block has two halves, and the order matters.
+The model has to be able to answer the question before the CLI can ask it.
+
+**Half one: `publishing_app/models.py`.**
+
+Ask first: "we wrote this twenty minutes ago in demo 02. Where does it go now?"
+Then fill in the four stubs.
+
+```python
+class Book:
+    def contracts(self):
+        return [
+            contract
+            for contract in Contract.all
+            if contract.book == self
+        ]
+
+    def authors(self):
+        return [contract.author for contract in self.contracts()]
+```
+
+```python
+class Author:
+    def contracts(self):
+        return [
+            contract
+            for contract in Contract.all
+            if contract.author == self
+        ]
+
+    def books(self):
+        return [contract.book for contract in self.contracts()]
+```
+
+Beats worth hitting while these are on screen:
+
+- `books()` is built on `contracts()`, not on a second loop. Write `contracts()` once, derive everything else from it.
+- Neither class stores the other's id. `Author` never mentions `Book`, and `Book` never mentions `Author`. `Contract.all` is the only thing that knows.
+- Ask: "if I delete a contract, how many places do I have to update?" One. That is the argument.
+
+Nothing visibly changes yet, which is worth naming.
+You just taught the model to answer a question nobody is asking.
+
+**Half two: `publishing_app/cli.py`, replacing the `show_author_books` stub.**
 
 Start with the naive version from the agenda, run it, break it on purpose (type `hello`, then `0`, then `27`), and only then harden it.
 
@@ -178,6 +225,20 @@ Two things to pause on:
 - `choice = 0` gives you `authors[-1]`, which is a *silent* wrong answer rather than a crash. It is the best bug in the session. Show it.
 
 Then demo option 2 with **Ted Chiang (8)** to hit the empty branch.
+
+**Optional ten-second flourish.**
+`list_authors` currently prints bare names. Now that `books()` exists, option 1 can use it:
+
+```python
+def list_authors():
+    for index, author in enumerate(Author.all, start=1):
+        count = len(author.books())
+        label = "book" if count == 1 else "books"
+        print(f"{index}. {author.name} ({count} {label})")
+```
+
+One line of model code, and a second feature gets it for free.
+That is the cheapest possible demonstration of why the method lives on `Author`.
 
 ### 1:05-1:17 - External services
 
@@ -384,9 +445,14 @@ The third one - "what connects that selection to their books?" - should now have
 
 Cut in this order:
 
-1. The `choose_from` extraction at 1:17. Write `create_contract` with a copy of the numbering loop and name the duplication out loud instead.
-2. The naive-then-harden pass at 0:45. Type the hardened `show_author_books` directly and discuss the failure modes without demonstrating each one.
-3. Demo 01. It is the one concept most students already have.
+1. The `list_authors` flourish at the end of 0:45. It is a nice-to-have.
+2. The `choose_from` extraction at 1:17. Write `create_contract` with a copy of the numbering loop and name the duplication out loud instead.
+3. The naive-then-harden pass at 0:45. Type the hardened `show_author_books` directly and discuss the failure modes without demonstrating each one.
+4. Demo 01. It is the one concept most students already have.
+
+Do not cut the `models.py` half of 0:45 to save time.
+If you are short, cut the CLI half instead and paste `show_author_books` from `git show solution:publishing_app/cli.py`.
+The relationship methods are the session; the menu plumbing is not.
 
 Never cut the 1:17 layering discussion.
 It is the point of the session.
@@ -396,7 +462,7 @@ It is the point of the session.
 ## Stretch questions if you are ahead
 
 - Should `Contract` reject a duplicate author/book pair? Which layer catches it?
-- `Publisher.authors()` in `models.py` walks books to reach authors. Trace the hops out loud.
+- Build `Publisher.authors()`: every author under contract for one of a publisher's books. It is a two-hop traversal, it is not on `main`, and the finished version is on the solution branch (`git show solution:publishing_app/models.py`). Watch for the duplicate when two authors share a book.
 - What breaks if two authors share a name? What is `Author.all` really keyed on?
 - Why does `seed.py` exist instead of a `load()` method on each model?
 - The tests never touch the network. Find the seam in `services.py` that makes that possible.

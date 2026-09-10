@@ -20,9 +20,7 @@ def menu():
 
 def list_authors():
     for index, author in enumerate(Author.all, start=1):
-        count = len(author.books())
-        label = "book" if count == 1 else "books"
-        print(f"{index}. {author.name} ({count} {label})")
+        print(f"{index}. {author.name}")
 
 
 def show_author_books():
