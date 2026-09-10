@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "publishing-app"
+version = "0.1.0"
+description = "A publishing management CLI, built live to connect object relationships, application structure and external services."
+requires-python = ">=3.9"
+dependencies = ["python-dotenv>=1.0"]
+
+[project.optional-dependencies]
+ai = ["anthropic>=1.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+publishing = "publishing_app.cli:main"
+
+[tool.setuptools]
+packages = ["publishing_app", "solution"]
+
+[tool.setuptools.package-data]
+publishing_app = ["data/*.json"]
+solution = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

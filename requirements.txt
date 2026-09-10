@@ -1,0 +1,8 @@
+# Runtime
+python-dotenv>=1.0
+
+# Optional: only needed for real AI output. The app runs offline without it.
+anthropic>=1.0
+
+# Development
+pytest>=8.0
