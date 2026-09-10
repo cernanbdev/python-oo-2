@@ -27,11 +27,32 @@ The app runs with no API key and no network connection.
 | Path | What it is |
 |---|---|
 | `publishing_app/` | The application. Three functions are left as `TODO` stubs and get written during the session. |
-| `solution/` | The finished version of the same application. |
 | `demos/` | Four standalone scripts covering one-to-many, many-to-many, association metadata, and where relationship logic belongs. |
-| `tests/` | 33 tests covering the models, the service layer, and the CLI. |
 | `AGENDA.md` | The 90-minute session plan. |
 | `FACILITATOR.md` | The runsheet: what to type, when, and how to recover. |
+
+## Branches
+
+| Branch | `publishing_app/` contains |
+|---|---|
+| `main` | The starter, with three `TODO` stubs. This is the branch you build on. |
+| `solution` | The finished application, plus the 33 tests that cover it. |
+
+To keep the finished version on disk without it showing up in the folder you are working in:
+
+```bash
+git worktree add ../publishing-solution solution
+
+cd ../publishing-solution
+python -m publishing_app.cli
+pytest -q
+```
+
+Or read one file from the branch without checking anything out:
+
+```bash
+git show solution:publishing_app/cli.py
+```
 
 ## The three layers
 
@@ -61,9 +82,7 @@ It is the only module that imports `anthropic`, and every way a call can fail ar
 
 ```bash
 python -m publishing_app.cli     # the app
-python -m solution.cli           # the finished version
 python demos/01_one_to_many.py   # concept demos
-pytest -q                        # the tests
 ```
 
 ## AI briefs

@@ -31,22 +31,29 @@ Close the `solution/` directory in your editor's file tree so students do not se
 
 ---
 
-## The two packages
+## The two branches
 
-| Directory | Role |
-|---|---|
-| `publishing_app/` | **You type here.** Runs from minute one; the three build targets are `TODO` stubs. |
-| `solution/` | The finished version. Your safety net, and what the tests run against. |
-| `demos/` | Four standalone scripts for the 0:15 concept block. |
+The answers are not in the folder you are sharing.
+They are on a second branch, checked out beside it.
 
-Both packages run the same way:
+| Branch | `publishing_app/` contains | Also has |
+|---|---|---|
+| `main` | The starter. Runs from minute one; the three build targets are `TODO` stubs. | `demos/` |
+| `solution` | The finished application, matching this runsheet's end state. | `tests/` |
+
+You teach from `main`.
+`../publishing-solution` is the `solution` branch on disk (see pre-flight).
 
 ```bash
-python -m publishing_app.cli
-python -m solution.cli
+python -m publishing_app.cli                    # what you are building
+
+cd ../publishing-solution
+python -m publishing_app.cli                    # the finished version
+pytest -q                                       # 33 passing tests
 ```
 
-If you need to bail out mid-build, run `python -m solution.cli` and keep teaching from the working app.
+If you need to bail out mid-build, `cd ../publishing-solution` and keep teaching from the working app.
+Do not switch branches in the shared folder while you have live-typed code in it.
 
 ---
 
@@ -318,8 +325,32 @@ def create_contract():
 
 Remember to add `Book` to the import at the top of `cli.py`.
 
-Worth naming out loud: `choose_from` checks the range explicitly, so it does not have the `choice = 0` bug you demonstrated at 0:45.
-Extracting the helper did not just remove duplication, it removed the duplicated bug.
+**Then cash the helper in.**
+`show_author_books` and `generate_author_brief` both still have their own numbering loop.
+Delete both loops and call `choose_from` instead:
+
+```python
+def show_author_books():
+    author = choose_from(Author.all, "\nChoose an author: ", lambda a: a.name)
+
+    if author is None:
+        return
+    ...
+```
+
+```python
+def generate_author_brief(ai_client):
+    author = choose_from(Author.all, "\nChoose an author: ", lambda a: a.name)
+
+    if author is None:
+        return
+    ...
+```
+
+That is about thirty seconds of deleting, and it is the strongest argument in the session for extracting a function.
+`choose_from` checks the range explicitly, so it does not have the `choice = 0` bug you demonstrated at 0:45.
+You did not just remove three copies of a loop.
+You removed three copies of a bug, and you will never write the fourth.
 
 **The demo:** sign **Ted Chiang (8)** to **Exhalation (11)** at **12.5**, then immediately pick option 2 and choose Ted Chiang.
 The book he did not have a minute ago is now there.
@@ -328,14 +359,17 @@ Nothing in `show_author_books` changed.
 Then try a royalty of **150** and let the model reject it.
 Ask: which file printed that message, and which file decided it was wrong?
 
-If you have time, run the tests on screen:
+If you have time, run the tests on screen from the solution checkout:
 
 ```bash
-pytest -q
+(cd ../publishing-solution && pytest -q)
 ```
 
 33 tests, no network, no API key, no typing into a menu.
 That is what the layering bought you.
+
+Run them from there rather than against your live-typed code.
+The assertions match the runsheet exactly, and a red suite caused by a stray wording change is not the lesson you want on screen at 1:24.
 
 ### 1:25-1:30 - Wrap-up
 
@@ -372,8 +406,15 @@ It is the point of the session.
 ## Emergency commands
 
 ```bash
-git checkout -- publishing_app          # undo everything you typed live
-python -m solution.cli                  # run the finished app
-pytest -q                               # 33 passing tests against solution/
-git diff                                # show the room exactly what you just wrote
+git checkout -- publishing_app                       # undo everything you typed live
+git diff                                             # show the room exactly what you just wrote
+
+cd ../publishing-solution && python -m publishing_app.cli   # run the finished app
+cd ../publishing-solution && pytest -q                      # 33 passing tests
+```
+
+To see the finished version of one file without leaving your editor:
+
+```bash
+git show solution:publishing_app/cli.py
 ```
