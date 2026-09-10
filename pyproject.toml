@@ -17,11 +17,10 @@ dev = ["pytest>=8.0"]
 publishing = "publishing_app.cli:main"
 
 [tool.setuptools]
-packages = ["publishing_app", "solution"]
+packages = ["publishing_app"]
 
 [tool.setuptools.package-data]
 publishing_app = ["data/*.json"]
-solution = ["data/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

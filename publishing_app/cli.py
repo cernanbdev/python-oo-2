@@ -4,8 +4,9 @@ It knows how to talk to a person. It does not know how authors and books are
 related, and it does not know that an AI provider exists.
 """
 
-from publishing_app.models import Author
+from publishing_app.models import Author, Book
 from publishing_app.seed import load_data
+from publishing_app.services import AIServiceError, build_ai_client, build_author_brief_prompt
 
 
 def menu():
@@ -25,34 +26,93 @@ def list_authors():
         print(f"{index}. {author.name} ({count} {label})")
 
 
+def choose_from(items, prompt, label):
+    """Print a numbered list, read one choice, return the object or None.
+
+    Turning "3" into an object is presentation work, so it belongs to the CLI.
+    """
+    for index, item in enumerate(items, start=1):
+        print(f"{index}. {label(item)}")
+
+    try:
+        choice = int(input(prompt))
+    except ValueError:
+        print("Please enter a number.")
+        return None
+
+    if choice < 1 or choice > len(items):
+        print("That is not one of the options.")
+        return None
+
+    # Menus start at 1, Python lists start at 0.
+    return items[choice - 1]
+
+
 def show_author_books():
-    # TODO (0:45 build)
-    #
-    #   Get authors -> display them -> read a choice -> find the Author object
-    #   -> ask the Author for its books -> display them.
-    #
-    # Then ask the room: what can a user type that breaks this?
-    print("Not built yet.")
+    author = choose_from(Author.all, "\nChoose an author: ", lambda a: a.name)
+
+    if author is None:
+        return
+
+    books = author.books()
+
+    if not books:
+        print(f"\n{author.name} has no books under contract yet.")
+        return
+
+    print(f"\nBooks by {author.name}:\n")
+
+    for book in books:
+        print(f"- {book.title}")
 
 
 def create_contract():
-    # TODO (1:17 challenge)
-    #
-    #   Choose an author, choose a book, enter a royalty, create the contract.
-    #   Decide out loud which layer owns each of those four steps.
-    print("Not built yet.")
+    author = choose_from(Author.all, "\nChoose author: ", lambda a: a.name)
+
+    if author is None:
+        return
+
+    print()
+    book = choose_from(Book.all, "\nChoose book: ", lambda b: b.title)
+
+    if book is None:
+        return
+
+    try:
+        royalty = float(input("\nRoyalty percentage: "))
+    except ValueError:
+        print("Royalty must be a number.")
+        return
+
+    try:
+        # The model owns the rule. The CLI just reports the verdict.
+        contract = author.sign(book, royalty)
+    except (TypeError, ValueError) as error:
+        print(error)
+        return
+
+    print(f"\nContract created: {contract.author.name} / {contract.book.title} at {contract.royalty}%")
 
 
-def generate_author_brief():
-    # TODO (1:05 build)
-    #
-    #   Choose an author, build a prompt from that author's books, hand the
-    #   prompt to the AI client, print the result. Where does each step live?
-    print("Not built yet.")
+def generate_author_brief(ai_client):
+    author = choose_from(Author.all, "\nChoose an author: ", lambda a: a.name)
+
+    if author is None:
+        return
+
+    prompt = build_author_brief_prompt(author)
+
+    print("\nGenerating...\n")
+
+    try:
+        print(ai_client.generate(prompt))
+    except AIServiceError as error:
+        print(f"Could not generate a brief. {error}")
 
 
 def main():
     load_data()
+    ai_client = build_ai_client()
 
     while True:
         menu()
@@ -69,7 +129,7 @@ def main():
             create_contract()
 
         elif choice == "4":
-            generate_author_brief()
+            generate_author_brief(ai_client)
 
         elif choice == "5":
             print("Goodbye.")

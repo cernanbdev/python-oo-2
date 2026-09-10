@@ -6,9 +6,9 @@ the practical payoff of separating models, CLI and services.
 
 import pytest
 
-from solution import cli
-from solution.models import Author, Contract
-from solution.services import AIClient, AIServiceError, EchoBackend
+from publishing_app import cli
+from publishing_app.models import Author, Contract
+from publishing_app.services import AIClient, AIServiceError, EchoBackend
 
 
 @pytest.fixture

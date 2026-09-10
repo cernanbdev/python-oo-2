@@ -26,7 +26,7 @@ The app runs with no API key and no network connection.
 
 | Path | What it is |
 |---|---|
-| `publishing_app/` | The application. Three functions are left as `TODO` stubs and get written during the session. |
+| `publishing_app/` | The application. What it contains depends on the branch, see below. |
 | `demos/` | Four standalone scripts covering one-to-many, many-to-many, association metadata, and where relationship logic belongs. |
 | `AGENDA.md` | The 90-minute session plan. |
 | `FACILITATOR.md` | The runsheet: what to type, when, and how to recover. |

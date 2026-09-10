@@ -2,8 +2,8 @@
 
 import pytest
 
-from solution.models import Author
-from solution.services import AIClient, AIServiceError, EchoBackend, build_author_brief_prompt
+from publishing_app.models import Author
+from publishing_app.services import AIClient, AIServiceError, EchoBackend, build_author_brief_prompt
 
 
 class ExplodingBackend:

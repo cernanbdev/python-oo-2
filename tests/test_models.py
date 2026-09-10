@@ -2,7 +2,7 @@
 
 import pytest
 
-from solution.models import Author, Book, Contract, Publisher
+from publishing_app.models import Author, Book, Contract, Publisher
 
 
 def find(model, attribute, value):

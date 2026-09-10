@@ -31,15 +31,24 @@ class AIServiceError(Exception):
     """One error type for every way the outside world can let us down."""
 
 
-# TODO (1:05 build): AIClient.
-#
-# Both backends below already have a .generate(prompt) method. Write the one
-# class the rest of the app depends on, so nothing outside this file has to
-# know which backend is in play or how it fails.
-#
-#   class AIClient:
-#       def __init__(self, backend): ...
-#       def generate(self, prompt): ...   # normalize failures to AIServiceError
+class AIClient:
+    """A reusable wrapper around whichever backend we are using.
+
+    This is the class the rest of the application depends on. It earns its keep
+    by turning every backend-specific failure into a single AIServiceError, so
+    the CLI needs exactly one `except` clause no matter what is underneath.
+    """
+
+    def __init__(self, backend):
+        self.backend = backend
+
+    def generate(self, prompt):
+        try:
+            return self.backend.generate(prompt)
+        except AIServiceError:
+            raise
+        except Exception as error:
+            raise AIServiceError(f"The AI service failed: {error}") from error
 
 
 class EchoBackend:
@@ -95,9 +104,10 @@ def build_ai_client():
     """Pick a backend once, at startup, and hand back one AIClient."""
     load_dotenv()
 
-    # TODO (1:05 build): return an AIClient wrapping AnthropicBackend() when
-    # ANTHROPIC_API_KEY is set, and EchoBackend() otherwise.
-    raise NotImplementedError("build_ai_client is the 1:05 build")
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return AIClient(AnthropicBackend())
+
+    return AIClient(EchoBackend())
 
 
 def build_author_brief_prompt(author):

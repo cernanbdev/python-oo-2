@@ -79,8 +79,9 @@ class Author:
     def books(self):
         return [contract.book for contract in self.contracts()]
 
-    # TODO (1:17 challenge): add sign(self, book, royalty) so creating a
-    # contract reads as something the author does.
+    def sign(self, book, royalty):
+        """Create the contract that connects this author to a book."""
+        return Contract(self, book, royalty)
 
     def __repr__(self):
         return f"<Author {self.name}>"
@@ -96,8 +97,13 @@ class Contract:
     all = []
 
     def __init__(self, author, book, royalty):
-        # TODO (1:17 challenge): royalty must be a number between 0 and 100.
-        # Ask the room where that rule belongs before you write it.
+        # The rule lives here, not in the CLI, because contracts also get
+        # created by tests, scripts and seed data.
+        if not isinstance(royalty, (int, float)) or isinstance(royalty, bool):
+            raise TypeError("Royalty must be a number.")
+
+        if not 0 <= royalty <= 100:
+            raise ValueError("Royalty must be between 0 and 100.")
 
         self.author = author
         self.book = book
